@@ -22,7 +22,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - uses: docker/build-push-action@v6
-        name: Docker Build only
+        name: Docker Build and Push
         with:
           push: true
           tags: baopdt/keycloak-bundid-simulator:${{ github.ref_name }}
