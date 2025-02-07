@@ -1,5 +1,67 @@
-# eid-bundid-idpmock
-hde, 12/23
+# BundID-Simulator
+
+## Übersicht
+
+> [!NOTE]
+> Der *BundID-Simulator* ist ein fachlicher Mock, der die Funktion von *BundID* nachbildet. Er basiert auf den 
+> Ausführungen in der BundID-Spezifikation.
+
+Die Verwendung von *BundID* in *IdentityManagement*-Systemen gestaltet die Implementierung von Testumgebungen kompliziert.
+Größere Herausforderungen bestehen mit der Nutzung von Vertrauenniveaus ab `STORK-QAA-Level-3`. Dann werden reale Personalausweise, 
+Elster-Zertifikate oder Eidas-Kennungen benötigt, die zum einen beschafft werden müssen und zun anderen eindeutig für 
+die nutzende Organisation sein sollten. Die Nutzung von *BundID* in Testumgebungen wird durch einen Mock, der die fachliche Funktion von 
+*BundID* simuliert, erleichtert. Dieses Ziel verfolgt die hier vorgestellt Anwendung `BundID-Simulator`. Der 
+`BundID-Simulator` nimmt SAML-Requests entgegen und sendet SAML-Responses laut *BundID*-Spezifikation zurück.
+
+Der `BundID-Simulator` wurde von der *Bundesagentur für Arbeit* entwickelt und wird in Verbindung mit dem Produkt
+*Keycloak* zur Identifizierung im Portal verwendet. Der Programmcode wird hier öffentlich abgelegt und kann von 
+anderen Behörden verwendet werden, die sich in ähnlichen fachlichen Umfeldern bewegen.
+
+## Architektur und Auslieferung
+
+Der `BundID-Simulator` ist eine Java-Anwendung auf Basis von des Frameworks [Spring Boot](https://spring.io/projects/spring-boot).
+Die Anwendung startet einen Webserver, der die grafische Oberfläche anzeigt. Die Anzeige nutzt das CSS-Framework
+[Bootstrap](https://getbootstrap.com/) sowie die Template-Engine *Thymeleaf* (Bstandteil von *Spring Boot*). Das Projekt 
+wird auf *Github* gebaut und als Docker-Image auf [Docker-Hub](https://hub.docker.com/) veröffentlicht.
+
+    baopdt/keycloak-bundid-simulator:<tag>
+
+User können das Image nutzen und in einem Kubernetes-Cluster mit angepasster Konfiguration deployen. Weitere Informationen
+zu diesem Thema später.
+
+## Funktionen und UI
+
+Der `BundID-Simulator` wird als SSO-Provider von der Anwendung *Keycloak* per POST-Request aufgerufen. Der POST-Body 
+enthält den SAML-Request. Enthalten sind u.a. das geforderte Mindestvertrauensniveau und die Rücksprung-Url des
+Aufrufers. Die Anwendung zeigt eine UI:
+
+![Startseite BundID-Simulator](/doc/picture01.jpg)
+
+Im oberen Teil wird eine konfigurierbare Personenliste dargestellt. Die in der Abbildung gezeigten Daten sind in der 
+Anwendung enthalten. In der Praxis kann eine Konfigurationsdatei mit anderen Daten verwendet werden. Im unteren 
+Teil der Anwendung werden Details der Indentifizierung festgelegt. Dazu gehören neben dem Status (OK, CANCLE oder ERROR) 
+das Identifizierungsmittel (beispielweise EID für Identifizierungen mit dem Personalausweis). Für Eidas-Identifizierungen
+wird zusätzlich das Eidas-Land sowie das Eidas-Vertrauensniveu nach BSI-Notiation (substantiell, hoch) angegeben. Die
+Aktion *Person übernehmen* erstellt aus den Personen- und Identifizierungsdaten einen SAML-Response und leitet 
+zum Aufrufer weiter.
+
+Das Element `bPK2` (bereichsspezifischen Personenkennzeichen 2. Version) identifiziert eine Person eindeutig. In den Stammdaten 
+ist jeder Person ein `bPK2` zugeordnet. Um dennoch mehr als die hinterlegte Anzahl Personen verwenden zu können, wird
+das Element *fachlicher Kontext* verwendet. Diese Zeichenkette wird als Suffix in der `bPK2` und in der Email-Adresse 
+verwendet. So können unendlich viele Personen simuliert werden.
+
+Wenn die Dateninhalte der definierten Personendaten nicht ausreichen, kann ein Datensatz bearbeitet werden. 
+Dazu wird ein Datensatz als Vorlage gewählt und mit der Aktion *Person bearbeiten* können einzelne 
+Datensatzbestandteile geändert werden. Die Aktion *Person übernehmen* nutzt diese Daten zur Erstellung
+des SAML-Response. Das Element *fachlicher Kontext* gibt es in dieser Auswahl nicht. `bPK2` und Email-Adresse
+sollten angepasst werden.
+
+![Person bearbeiten](/doc/picture02.jpg)
+
+## Personendaten anpassen 
+
+Die Liste der angezeigten Personen wird in einer Konfiguration verwaltet. Eine 
+
 
 ## Mission
 
