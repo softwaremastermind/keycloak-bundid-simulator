@@ -79,7 +79,7 @@ Formpost wird an den Keycloak zurückgeleitet. Dort werden die Userdaten verarbe
 
 Aufruf der lokalen Anwendung:
 
-    http://localhost:8443/saml
+    http://localhost:8080/saml
 
 ## Architektur
 
